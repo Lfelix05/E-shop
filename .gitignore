@@ -43,3 +43,11 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Env files and secret keys
+.env
+serviceAccountKey.json
+.firebase/
+
+# IDE
+.vscode/
