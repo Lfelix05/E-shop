@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart' as fire_auth;
 import 'package:flutter/material.dart';
 
 import 'login.dart';
@@ -59,12 +60,54 @@ class WelcomeView extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomeScreen(),
-                      ),
-                    ),
+                    onPressed: () async {
+                      try {
+                        final userCredential = await fire_auth
+                            .FirebaseAuth
+                            .instance
+                            .signInAnonymously();
+
+                        final uid = userCredential.user?.uid;
+                        if (uid == null) {
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Não foi possível autenticar anonimamente.',
+                              ),
+                            ),
+                          );
+                          return;
+                        }
+
+                        if (!context.mounted) return;
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                HomeScreen(userId: uid, userName: 'Visitante'),
+                          ),
+                        );
+                      } on fire_auth.FirebaseAuthException catch (e) {
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Erro ao entrar como visitante: ${e.message}',
+                            ),
+                          ),
+                        );
+                      } catch (_) {
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Erro inesperado ao entrar como visitante.',
+                            ),
+                          ),
+                        );
+                      }
+                    },
                     child: const Text('Continue como visitante'),
                   ),
                 ],

@@ -1,24 +1,48 @@
-import 'dart:crypto';
 import 'dart:convert';
+import 'package:crypto/crypto.dart';
 
 class User {
-  String name;
-  String email;
-  String password;
+  final String id;
+  final String name;
+  final String email;
+  final List<String>? wishList;
+  final String? password;
+  final String? profilePictureUrl;
 
-  String? hashPassword(String password) {
-    var bytes = utf8.encode(password);
-    var digest = sha256.convert(bytes);
-    return digest.toString();
+  User({
+    required this.id,
+    required this.name,
+    required this.email,
+    this.wishList,
+    this.password,
+    this.profilePictureUrl,
+  });
+
+  String? get hashedPassword {
+    if (password == null) return null;
+    final bytes = utf8.encode(password!);
+    return sha256.convert(bytes).toString();
   }
-
-  User({required this.name, required this.email, required this.password});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      name: json['name'],
-      email: json['email'],
-      password: hashPassword(json['password']),
+      id: json['id'] as String,
+      name: json['name'] as String,
+      email: json['email'] as String,
+      wishList: json['wishList'] as List<String>?,
+      password: json['password'] as String?,
+      profilePictureUrl: json['profilePictureUrl'] as String?,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'wishList': wishList,
+      'password': hashedPassword,
+      'profilePictureUrl': profilePictureUrl,
+    };
   }
 }
