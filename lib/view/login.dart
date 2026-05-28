@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart' as fire_auth;
 import 'package:flutter/material.dart';
 import '../models/user.dart';
 import 'home.dart';
+import '../validator.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -95,15 +96,7 @@ class _LoginViewState extends State<LoginView> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(labelText: 'Email'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor, insira seu email.';
-                    }
-                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                      return 'Por favor, insira um email válido.';
-                    }
-                    return null;
-                  },
+                  validator: EmailValidator.validate,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -121,15 +114,7 @@ class _LoginViewState extends State<LoginView> {
                           setState(() => _obscurePassword = !_obscurePassword),
                     ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor, insira sua senha.';
-                    }
-                    if (value.length < 6) {
-                      return 'A senha deve ter pelo menos 6 caracteres.';
-                    }
-                    return null;
-                  },
+                  validator: PasswordValidator.validate,
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(

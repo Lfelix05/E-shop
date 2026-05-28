@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart' as fire_auth;
 import 'package:flutter/material.dart';
 import '../models/user.dart';
 import 'login.dart';
+import '../validator.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -112,27 +113,14 @@ class _RegisterViewState extends State<RegisterView> {
                   TextFormField(
                     controller: _nameController,
                     decoration: const InputDecoration(labelText: 'Nome'),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Por favor, insira seu nome.';
-                      }
-                      return null;
-                    },
+                    validator: NameValidator.validate,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _emailController,
                     decoration: const InputDecoration(labelText: 'Email'),
                     keyboardType: TextInputType.emailAddress,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Por favor, insira seu email.';
-                      }
-                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                        return 'Por favor, insira um email válido.';
-                      }
-                      return null;
-                    },
+                    validator: EmailValidator.validate,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
@@ -151,15 +139,7 @@ class _RegisterViewState extends State<RegisterView> {
                       ),
                     ),
                     obscureText: _obscurePassword,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor, insira uma senha.';
-                      }
-                      if (value.length < 6) {
-                        return 'A senha deve ter pelo menos 6 caracteres.';
-                      }
-                      return null;
-                    },
+                    validator: PasswordValidator.validate,
                   ),
                   const SizedBox(height: 8),
                   LinearProgressIndicator(
@@ -209,15 +189,7 @@ class _RegisterViewState extends State<RegisterView> {
                       ),
                     ),
                     obscureText: _obscurePassword,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor, confirme sua senha.';
-                      }
-                      if (value != _passwordController.text) {
-                        return 'As senhas não coincidem.';
-                      }
-                      return null;
-                    },
+                    validator: PasswordValidator.validate,
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton(
