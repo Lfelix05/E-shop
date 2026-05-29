@@ -51,3 +51,4 @@ serviceAccountKey.json
 
 # IDE
 .vscode/
+.claude/

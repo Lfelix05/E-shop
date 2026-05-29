@@ -1,95 +1,38 @@
 import 'package:cloud_firestore/cloud_firestore.dart' as firestore;
-import 'user.dart';
+import 'package:flutter/foundation.dart';
+
 import 'adress.dart';
 
+/// Acesso ao Firestore para os dados do app.
+///
+/// Hoje só guardamos o endereço de entrega do usuário. Login e cadastro usam
+/// o Firebase Auth diretamente nas telas correspondentes.
 class Database {
-  static Future<User> addUser(
-    String name,
-    String email,
-    String password,
-  ) async {
-    try {
-      final users = firestore.FirebaseFirestore.instance.collection('users');
-      final newDoc = users.doc();
-      final user = User(
-        id: newDoc.id,
-        name: name,
-        email: email,
-        wishList: [],
-        password: password,
-      );
-      await newDoc.set(user.toJson());
-      return user;
-    } catch (e) {
-      print('Erro ao adicionar usuário: $e');
-      throw Exception('Erro ao adicionar usuário');
-    }
+  /// Salva (cria ou atualiza) o endereço do usuário.
+  ///
+  /// Guardamos um único endereço por usuário em `addresses/{userId}`, o que
+  /// funciona tanto para contas registradas quanto para visitantes anônimos.
+  static Future<void> saveAddress(String userId, Adress address) async {
+    await firestore.FirebaseFirestore.instance
+        .collection('addresses')
+        .doc(userId)
+        .set(address.toJson());
   }
 
-  static Future<User?> getUserById(String userId) async {
+  /// Carrega o endereço salvo do usuário, ou `null` se ainda não houver um.
+  static Future<Adress?> getAddress(String userId) async {
     try {
       final doc = await firestore.FirebaseFirestore.instance
-          .collection('users')
+          .collection('addresses')
           .doc(userId)
           .get();
 
       if (doc.exists && doc.data() != null) {
-        return User.fromJson(doc.data()!);
+        return Adress.fromJson(doc.data()!);
       }
       return null;
     } catch (e) {
-      print('Erro ao buscar usuário: $e');
-      return null;
-    }
-  }
-
-  static Future<void> createUser(User user) async {
-    try {
-      await firestore.FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.id)
-          .set(user.toJson());
-    } catch (e) {
-      print('Erro ao criar usuário: $e');
-    }
-  }
-
-  static Future<User?> getUserByEmail(String email) async {
-    try {
-      final querySnapshot = await firestore.FirebaseFirestore.instance
-          .collection('users')
-          .where('email', isEqualTo: email)
-          .get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        return User.fromJson(querySnapshot.docs.first.data());
-      }
-      return null;
-    } catch (e) {
-      print('Erro ao buscar usuário por email: $e');
-      return null;
-    }
-  }
-
-  static Future<Adress?> addAdressToUser(String userId, Adress address) async {
-    try {
-      final addressesCollection = firestore.FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection('adresses');
-
-      await addressesCollection.add(address.toJson());
-
-      return Adress(
-        userId: userId,
-        street: address.street,
-        city: address.city,
-        state: address.state,
-        zipCode: address.zipCode,
-        country: address.country,
-      );
-    } catch (e) {
-      print('Erro ao adicionar endereço ao usuário: $e');
+      debugPrint('Erro ao buscar endereço: $e');
       return null;
     }
   }
