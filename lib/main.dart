@@ -28,9 +28,42 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    final colorScheme = ColorScheme.fromSeed(seedColor: Colors.deepPurple);
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: WelcomeView(),
+      title: 'E-Shop',
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: colorScheme,
+        scaffoldBackgroundColor: const Color(0xFFF6F5FB),
+        appBarTheme: AppBarTheme(
+          backgroundColor: colorScheme.primary,
+          foregroundColor: colorScheme.onPrimary,
+          centerTitle: false,
+          elevation: 0,
+        ),
+        cardTheme: CardThemeData(
+          clipBehavior: Clip.antiAlias,
+          elevation: 1.5,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        filledButtonTheme: FilledButtonThemeData(
+          style: FilledButton.styleFrom(
+            minimumSize: const Size.fromHeight(48),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
+        inputDecorationTheme: const InputDecorationTheme(
+          border: OutlineInputBorder(),
+          filled: true,
+          fillColor: Colors.white,
+        ),
+      ),
+      home: const WelcomeView(),
     );
   }
 }
